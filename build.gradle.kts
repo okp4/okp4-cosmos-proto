@@ -79,4 +79,17 @@ subprojects {
             }
         }
     }
+
+    configure<PublishingExtension> {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/okp4/kafka-connector-cosmos")
+                credentials {
+                    username = System.getenv("MAVEN_REPOSITORY_USERNAME")
+                    password = System.getenv("MAVEN_REPOSITORY_PASSWORD")
+                }
+            }
+        }
+    }
 }
