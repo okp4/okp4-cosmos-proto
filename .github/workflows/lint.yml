@@ -1,17 +1,18 @@
 name: Lint
 
 on:
+  workflow_call:
+
   push:
     branches: [ main ]
 
   pull_request:
     branches: [ main ]
 
-  workflow_dispatch:
-
 jobs:
   lint-commits:
     runs-on: ubuntu-20.04
+    if: github.actor != 'dependabot[bot]'
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -31,6 +32,7 @@ jobs:
         uses: avto-dev/markdown-lint@v1.5.0
         with:
           args: "**/*.md"
+          ignore: "CHANGELOG.md"
 
   lint-yaml:
     runs-on: ubuntu-20.04
