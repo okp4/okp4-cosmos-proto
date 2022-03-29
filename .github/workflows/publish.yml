@@ -1,0 +1,25 @@
+name: Publish
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-kotlin:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Publish maven
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: publish
+          env:
+            MAVEN_REPOSITORY_USERNAME: ${{ secrets.MAVEN_REPOSITORY_USERNAME }}
+            MAVEN_REPOSITORY_PASSWORD: ${{ secrets.MAVEN_REPOSITORY_PASSWORD }}
