@@ -9,5 +9,6 @@
 
 rootProject.name = "okp4-cosmos-proto"
 
-include("cosmos-sdk")
+include("cosmos-sdk", "okp4")
 project(":cosmos-sdk").projectDir = file("kotlin/cosmos-sdk")
+project(":okp4").projectDir = file("kotlin/okp4")
