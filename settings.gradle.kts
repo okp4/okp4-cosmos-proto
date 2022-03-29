@@ -8,3 +8,6 @@
  */
 
 rootProject.name = "okp4-cosmos-proto"
+
+include("cosmos-sdk")
+project(":cosmos-sdk").projectDir = file("kotlin/cosmos-sdk")
