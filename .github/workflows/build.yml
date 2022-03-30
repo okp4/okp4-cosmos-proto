@@ -25,3 +25,22 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build -x check
+  build-typescript:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Setup node environment (for building)
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.14.0
+      
+      - name: Fetch dependencies
+        run: yarn
+      
+      - name: Generate sources
+        run: yarn generate
+      
+      - name: Build
+        run: yarn build
