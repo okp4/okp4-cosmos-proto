@@ -4,12 +4,13 @@ on:
   push:
     branches: [ main ]
 
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   publish-maven:
     runs-on: ubuntu-20.04
-    concurrency:
-      group: publish-maven-${{ github.ref }}
-      cancel-in-progress: true
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -29,9 +30,6 @@ jobs:
 
   publish-npm:
     runs-on: ubuntu-20.04
-    concurrency:
-      group: publish-npm-${{ github.ref }}
-      cancel-in-progress: true
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
