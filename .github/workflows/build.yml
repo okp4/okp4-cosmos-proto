@@ -37,10 +37,10 @@ jobs:
           node-version: 16.14.0
 
       - name: Fetch dependencies
-        run: yarn
+        run: yarn --cwd ts
 
       - name: Generate sources
-        run: yarn generate
+        run: yarn --cwd ts generate
 
       - name: Build
-        run: yarn build
+        run: yarn --cwd ts build

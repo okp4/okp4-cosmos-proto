@@ -32,7 +32,7 @@
      },
     "scripts": {
         "clean": "rm -rf gen-ts && mkdir gen-ts",
-        "generate": "yarn run clean && protoc -I=proto/cosmos-sdk -I=proto/okp4 $(find proto -type f -name '*.proto' | tr '\n' ' ') --js_out=import_style=commonjs,binary:gen-ts --grpc-web_out=import_style=typescript,mode=grpcweb:gen-ts",
+        "generate": "yarn run clean && protoc -I=../proto/cosmos-sdk -I=../proto/okp4 $(find ../proto -type f -name '*.proto' | tr '\n' ' ') --js_out=import_style=commonjs,binary:gen-ts --grpc-web_out=import_style=typescript,mode=grpcweb:gen-ts",
         "build": "tsc && yarn run hack",
         "hack": "find gen-ts -type d | cut -d '/' -f2- | xargs -I {} mkdir -p dist/{} && find gen-ts -type f -name *.d.ts | cut -d '/' -f2- | xargs -I {} cp gen-ts/{} dist/{} && find gen-ts -type f -name *.js | cut -d '/' -f2- | xargs -I {} cp gen-ts/{} dist/{}"
     }

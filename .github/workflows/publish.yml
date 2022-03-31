@@ -53,9 +53,9 @@ jobs:
 
           DATE=$(date +%Y%m%d%H%M%S)
 
-          yarn && yarn generate && yarn build
+          yarn --cwd ts && yarn --cwd ts generate && yarn --cwd ts build
 
-          publish=(yarn publish --no-git-tag-version --non-interactive)
+          publish=(yarn --cwd ts publish --no-git-tag-version --non-interactive)
 
           if [[ $GITHUB_REF == refs/tags/v* ]]; then
             publish+=(--tag latest)
