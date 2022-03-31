@@ -1,20 +1,16 @@
 sourceSets {
     main {
         proto {
-            srcDir("../../proto/okp4")
+            srcDir("../../../proto/cosmos-sdk")
         }
     }
 }
 
-dependencies {
-    implementation(project(":cosmos-sdk"))
-}
-
 publishing {
     publications {
-        create<MavenPublication>("okp4") {
+        create<MavenPublication>("cosmos") {
             groupId = rootProject.group as String?
-            artifactId = "okp4"
+            artifactId = "cosmos-sdk"
             version = rootProject.version as String?
 
             artifact(tasks.jar)

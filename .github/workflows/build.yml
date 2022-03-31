@@ -29,6 +29,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build -x check
+          build-root-directory: kotlin
 
   build-typescript:
     runs-on: ubuntu-20.04
