@@ -2,7 +2,11 @@
     "name": "@okp4/okp4-grpc-client",
     "version": "1.0.0",
     "private": false,
-    "repository": "git@github.com:okp4/okp4-cosmos-proto.git",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:okp4/okp4-cosmos-proto.git",
+        "directory": "ts"
+    },
     "license": "BSD-3-Clause",
     "description": "Typescript gRPC client for ØKP4 and by extension, CØSMOS based blockchains.",
     "homepage": "https://github.com/okp4/okp4-cosmos-proto",
