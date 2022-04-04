@@ -106,8 +106,8 @@ subprojects {
                 name = "GitHubPackages"
                 url = uri("https://maven.pkg.github.com/okp4/kafka-connector-cosmos")
                 credentials {
-                    username = System.getenv("MAVEN_REPOSITORY_USERNAME")
-                    password = System.getenv("MAVEN_REPOSITORY_PASSWORD")
+                    username = project.property("maven.credentials.username") as String
+                    password = project.property("maven.credentials.password") as String
                 }
             }
         }

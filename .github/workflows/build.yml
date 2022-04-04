@@ -25,6 +25,13 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
+      - name: Configure gradle.properties
+        run: |
+          cat <<EOF >> kotlin/gradle.properties
+          maven.credentials.username=${{ secrets.MAVEN_REPOSITORY_USERNAME }}
+          maven.credentials.password=${{ secrets.MAVEN_REPOSITORY_PASSWORD }}
+          EOF
+
       - name: Build kotlin
         uses: gradle/gradle-build-action@v2
         with:
