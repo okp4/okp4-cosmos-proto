@@ -9,6 +9,10 @@ on:
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-kotlin:
     runs-on: ubuntu-20.04
@@ -25,6 +29,8 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build -x check
+          build-root-directory: kotlin
+
   build-typescript:
     runs-on: ubuntu-20.04
     steps:
@@ -37,10 +43,10 @@ jobs:
           node-version: 16.14.0
 
       - name: Fetch dependencies
-        run: yarn
+        run: yarn --cwd ts
 
       - name: Generate sources
-        run: yarn generate
+        run: yarn --cwd ts generate
 
       - name: Build
-        run: yarn build
+        run: yarn --cwd ts build
