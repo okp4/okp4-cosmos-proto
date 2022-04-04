@@ -13,7 +13,27 @@ buildscript {
 }
 
 group = "com.okp4.grpc"
-version = "1.0-SNAPSHOT"
+
+fun prepareVersion(): String {
+    val digits = (project.property("project.version") as String).split(".")
+    if (digits.size != 3) {
+        throw GradleException("Wrong 'project.version' specified in properties, expects format 'x.y.z'")
+    }
+
+    return digits.map { it.toInt() }
+        .let {
+            it.takeIf { it[2] == 0 }?.subList(0, 2) ?: it
+        }.let {
+            it.takeIf { !project.hasProperty("release") }?.mapIndexed { i, d ->
+                if(i == 1) d + 1 else d
+            } ?: it
+        }.joinToString(".") + project.hasProperty("release").let { if (it) "" else "-SNAPSHOT" }
+}
+
+
+afterEvaluate {
+    project.version = prepareVersion()
+}
 
 subprojects {
     apply {
