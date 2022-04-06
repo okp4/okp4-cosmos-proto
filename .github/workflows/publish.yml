@@ -2,7 +2,8 @@ name: Publish
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+    tags: ["v*"]
 
 concurrency:
   group: publish-${{ github.ref }}
@@ -20,16 +21,28 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      - name: Publish maven
+      - name: Configure gradle.properties
+        run: |
+          cat <<EOF >> kotlin/gradle.properties
+          maven.credentials.username=${{ secrets.MAVEN_REPOSITORY_USERNAME }}
+          maven.credentials.password=${{ secrets.MAVEN_REPOSITORY_PASSWORD }}
+          EOF
+
+      - name: Publish maven snapshot
+        if: "!contains(github.ref, 'refs/tags/')"
         uses: gradle/gradle-build-action@v2
         with:
           arguments: publish
           build-root-directory: kotlin
-        env:
-          MAVEN_REPOSITORY_USERNAME: ${{ secrets.MAVEN_REPOSITORY_USERNAME }}
-          MAVEN_REPOSITORY_PASSWORD: ${{ secrets.MAVEN_REPOSITORY_PASSWORD }}
 
-  publish-npm:
+      - name: Publish maven release
+        if: contains(github.ref, 'refs/tags/')
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: publish -Prelease
+          build-root-directory: kotlin
+
+  publish-npm-okp4:
     runs-on: ubuntu-20.04
     steps:
       - name: Check out repository
@@ -48,7 +61,7 @@ jobs:
 
       - name: Publish package
         run: |
-          set -euo pipefail
+          set -eu
 
           DATE=$(date +%Y%m%d%H%M%S)
 
@@ -63,6 +76,37 @@ jobs:
           else
             publish+=(--prerelease --preid next.$DATE --tag next)
           fi
+
+          echo "🚀 Publishing npm package with following command line: ${publish[@]}"
+          "${publish[@]}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_REGISTRY_TOKEN }}
+
+  publish-npm-public:
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up context
+        id: project_context
+        uses: FranzDiebold/github-env-vars-action@v2.3.1
+
+      - name: Setup node environment (for publishing)
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.14.0
+          registry-url: "https://registry.npmjs.org"
+          scope: "@okp4"
+
+      - name: Publish package
+        run: |
+          set -eu
+
+          yarn --cwd ts && yarn --cwd ts generate && yarn --cwd ts build
+
+          publish=(yarn --cwd ts publish --access=public --no-git-tag-version --non-interactive --tag latest)
 
           echo "🚀 Publishing npm package with following command line: ${publish[@]}"
           "${publish[@]}"

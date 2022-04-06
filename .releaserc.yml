@@ -1,0 +1,32 @@
+branches:
+  - main
+
+plugins:
+  - "@semantic-release/commit-analyzer"
+  - "@semantic-release/release-notes-generator"
+  - - "@semantic-release/changelog"
+    - changelogFile: CHANGELOG.md
+      changelogTitle: "# ØKP4 CØSMOS proto"
+  - - "@semantic-release/npm"
+    - npmPublish: false
+      tarballDir: "false"
+      pkgRoot: ./ts
+  - - '@google/semantic-release-replace-plugin'
+    - replacements:
+        - files:
+            - kotlin/gradle.properties
+          from: 'project\.version=.*'
+          to: 'project.version=${nextRelease.version}'
+          countMatches: true
+          results:
+            - file: kotlin/gradle.properties
+              hasChanged: true
+              numMatches: 1
+              numReplacements: 1
+  - "@semantic-release/github"
+  - - "@semantic-release/git"
+    - assets:
+        - CHANGELOG.md
+        - kotlin/gradle.properties
+        - ts/package.json
+      message: "chore(release): perform release ${nextRelease.version}"
