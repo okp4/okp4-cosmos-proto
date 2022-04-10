@@ -11,15 +11,24 @@ plugins:
     - npmPublish: false
       tarballDir: "false"
       pkgRoot: ./ts
-  - - '@google/semantic-release-replace-plugin'
+  - - "@google/semantic-release-replace-plugin"
     - replacements:
         - files:
             - kotlin/gradle.properties
           from: 'project\.version=.*'
-          to: 'project.version=${nextRelease.version}'
+          to: "project.version=${nextRelease.version}"
           countMatches: true
           results:
             - file: kotlin/gradle.properties
+              hasChanged: true
+              numMatches: 1
+              numReplacements: 1
+        - files: [python/pyproject.toml]
+          from: ^version = ".+"
+          to: version = "${nextRelease.version}"
+          countMatches: true
+          results:
+            - file: python/pyproject.toml
               hasChanged: true
               numMatches: 1
               numReplacements: 1
