@@ -7,3 +7,4 @@ build
 node_modules
 dist
 gen-ts
+okp4_grpc_client
