@@ -13,3 +13,4 @@ Generate gRPC clients for multiple targets based on [CØSMOS](https://github.com
 
 - [Kotlin](kotlin/README.md)
 - [Typescript (grpc-web)](ts/README.md)
+- [Python](python/README.md)
