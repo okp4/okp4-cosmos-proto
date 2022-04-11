@@ -57,3 +57,36 @@ jobs:
 
       - name: Build
         run: yarn --cwd ts build
+
+  build-python:
+    runs-on: ubuntu-20.04
+    env:
+      WORK_DIR: ./python
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install Python Poetry
+        uses: abatilo/actions-poetry@v2.1.4
+        with:
+          poetry-version: 1.1.11
+
+      - name: Install project dependencies
+        working-directory: ${{env.WORK_DIR}}
+        run: |
+          poetry install
+
+      - name: Install project dependencies
+        working-directory: ${{env.WORK_DIR}}
+        run: |
+          mkdir -p okp4_grpc_client
+          poetry run python -m grpc_tools.protoc -I=../proto/cosmos-sdk -I=../proto/okp4 $(find ../proto -type f -name '*.proto' | tr '\n' ' ') --grpc_python_out=okp4_grpc_client
+
+      - name: Build project
+        working-directory: ${{env.WORK_DIR}}
+        run: |
+          poetry build
