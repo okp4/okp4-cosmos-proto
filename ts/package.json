@@ -33,7 +33,7 @@
     },
     "config": {
         "protocVersion": "3.11.0"
-     },
+    },
     "scripts": {
         "clean": "rm -rf gen-ts && mkdir gen-ts",
         "generate": "yarn run clean && protoc -I=../proto/cosmos-sdk -I=../proto/okp4 $(find ../proto -type f -name '*.proto' | tr '\n' ' ') --js_out=import_style=commonjs,binary:gen-ts --grpc-web_out=import_style=typescript,mode=grpcweb:gen-ts",
