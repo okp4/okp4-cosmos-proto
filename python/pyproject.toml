@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "okp4_grpc_client"
-version = "1.0.0"
+version = "0.1.0"
 description = "Python gRPC client for ØKP4 and by extension, CØSMOS based blockchains."
 authors = ["OKP4 <opensource@okp4.com>"]
 readme = "README.md"
