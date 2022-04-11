@@ -38,4 +38,5 @@ plugins:
         - CHANGELOG.md
         - kotlin/gradle.properties
         - ts/package.json
+        - python/pyproject.toml
       message: "chore(release): perform release ${nextRelease.version}"
