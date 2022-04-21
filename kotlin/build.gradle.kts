@@ -104,7 +104,7 @@ subprojects {
         repositories {
             maven {
                 name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/okp4/${project.name}")
+                url = uri("https://maven.pkg.github.com/okp4/${rootProject.name}")
                 credentials {
                     username = project.property("maven.credentials.username") as String
                     password = project.property("maven.credentials.password") as String
