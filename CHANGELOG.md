@@ -1,5 +1,12 @@
 # ØKP4 CØSMOS proto
 
+# [1.1.0](https://github.com/okp4/okp4-cosmos-proto/compare/v1.0.0...v1.1.0) (2022-04-21)
+
+
+### Features
+
+* add trigger-service tx proto ([e14fd39](https://github.com/okp4/okp4-cosmos-proto/commit/e14fd39346135ee6af0c3a66dbf5e2c54635544f))
+
 # 1.0.0 (2022-04-11)
 
 
