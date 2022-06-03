@@ -73,6 +73,7 @@ subprojects {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
         }
+        finalizedBy("genReflectConfig")
     }
 
     protobuf {
@@ -98,6 +99,11 @@ subprojects {
                 }
             }
         }
+    }
+
+    tasks.register("genReflectConfig", GenerateReflectionConfig::class) {
+        configPath = "reflection-config.json"
+        packageNames = listOf("cosmos", "tendermint", "cosmos_proto", "okp4-cosmos-proto.okp4")
     }
 
     configure<PublishingExtension> {
