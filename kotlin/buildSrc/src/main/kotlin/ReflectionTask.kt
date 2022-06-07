@@ -60,7 +60,7 @@ open class GenerateReflectionConfig : DefaultTask() {
                             Descriptors.Descriptor::class.java.let { c ->
                                 ReflectionConfig(
                                     name = c.name,
-                                    methods = c.methods .map {
+                                    methods = c.methods.map {
                                         ReflectionMethod(
                                             name = it.name,
                                             parameterTypes = it.parameterTypes.map { param ->
