@@ -1,11 +1,12 @@
 import com.google.gson.GsonBuilder
 import com.google.protobuf.Descriptors
 import com.google.protobuf.GeneratedMessageV3
+import io.github.classgraph.ClassGraph
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
-import org.reflections.Reflections
 import java.io.File
+import java.net.URLClassLoader
 
 data class ReflectionMethod(
     val name: String,
@@ -19,51 +20,58 @@ data class ReflectionConfig(
 
 open class GenerateReflectionConfig : DefaultTask() {
     @Input
-    lateinit var configPath: String
-    
+    lateinit var output: String
+
     @Input
-    lateinit var packageNames: List<String>
+    lateinit var sources: List<String>
 
     @TaskAction
     fun generateReflectionConfigJSON() =
-        File(configPath).writeText(
+        File(output).writeText(
             GsonBuilder().setPrettyPrinting().create()
                 .toJson(
-                    packageNames.asSequence().map { Reflections(it) }
-                        .map { reflections ->
-                            reflections.getSubTypesOf(GeneratedMessageV3::class.java)
-                                .map { it.name }
-                        }
-                        .flatten()
-                        .map { className ->
-                            ReflectionConfig(
-                                name = className,
-                                methods = listOf(
-                                    ReflectionMethod(
-                                        name = "getDescriptor",
-                                        parameterTypes = emptyList()
-                                    )
+                    listOf(
+                        ClassGraph()
+                            .addClassLoader(
+                                URLClassLoader(
+                                    sources.map {
+                                        File(it)
+                                            .toURI()
+                                            .toURL()
+                                    }.toTypedArray(),
+                                    null,
                                 )
                             )
-                        }
-                        .toMutableList()
-                        .apply {
-                            this.add(
-                                Descriptors.Descriptor::class.java.let { c ->
-                                    ReflectionConfig(
-                                        name = c.name,
-                                        methods = c.methods .map {
-                                            ReflectionMethod(
-                                                name = it.name,
-                                                parameterTypes = it.parameterTypes.map { param ->
-                                                    param.name
-                                                }
-                                            )
-                                        }
+                            .enableAllInfo()
+                            .scan()
+                            .getSubclasses(GeneratedMessageV3::class.java)
+                            .map {
+                                ReflectionConfig(
+                                    name = it.name,
+                                    methods = listOf(
+                                        ReflectionMethod(
+                                            name = "getDescriptor",
+                                            parameterTypes = emptyList()
+                                        )
                                     )
-                                }
-                            )
-                        }
+                                )
+                            },
+                        listOf(
+                            Descriptors.Descriptor::class.java.let { c ->
+                                ReflectionConfig(
+                                    name = c.name,
+                                    methods = c.methods .map {
+                                        ReflectionMethod(
+                                            name = it.name,
+                                            parameterTypes = it.parameterTypes.map { param ->
+                                                param.name
+                                            }
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    ).flatten()
                 )
         )
 }
