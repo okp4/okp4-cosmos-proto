@@ -30,7 +30,6 @@ fun prepareVersion(): String {
         }.joinToString(".") + project.hasProperty("release").let { if (it) "" else "-SNAPSHOT" }
 }
 
-
 afterEvaluate {
     project.version = prepareVersion()
 }
