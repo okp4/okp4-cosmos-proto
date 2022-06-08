@@ -1,5 +1,12 @@
 # ØKP4 CØSMOS proto
 
+# [1.2.0](https://github.com/okp4/okp4-cosmos-proto/compare/v1.1.0...v1.2.0) (2022-06-08)
+
+
+### Features
+
+* generate reflection config task ([7c58373](https://github.com/okp4/okp4-cosmos-proto/commit/7c583737494bfeaab1705fa6481e1541be8e1ab5))
+
 # [1.1.0](https://github.com/okp4/okp4-cosmos-proto/compare/v1.0.0...v1.1.0) (2022-04-21)
 
 
