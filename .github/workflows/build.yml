@@ -4,10 +4,10 @@ on:
   workflow_call:
 
   push:
-    branches: [ main ]
+    branches: [main]
 
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 concurrency:
   group: build-${{ github.ref }}
@@ -22,8 +22,8 @@ jobs:
 
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '11'
+          distribution: "temurin"
+          java-version: "11"
 
       - name: Configure gradle.properties
         run: |
@@ -60,8 +60,13 @@ jobs:
 
   build-python:
     runs-on: ubuntu-20.04
-    env:
-      WORK_DIR: ./python
+    strategy:
+      matrix:
+        target:
+          - name: cosmos_sdk_grpc_client
+            includes: "-I=../../proto/cosmos-sdk $(find ../../proto/cosmos-sdk -type f -name '*.proto' | tr '\n' ' ')"
+          - name: okp4_grpc_client
+            includes: "-I=../../proto/cosmos-sdk -I=../../proto/okp4 $(find ../../proto -type f -name '*.proto' | tr '\n' ' ')"
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -76,17 +81,17 @@ jobs:
           poetry-version: 1.1.11
 
       - name: Install project dependencies
-        working-directory: ${{env.WORK_DIR}}
+        working-directory: ./python/${{ matrix.target.name }}
         run: |
           poetry install
 
       - name: Install project dependencies
-        working-directory: ${{env.WORK_DIR}}
+        working-directory: ./python/${{ matrix.target.name }}
         run: |
-          mkdir -p okp4_grpc_client
-          poetry run python -m grpc_tools.protoc -I=../proto/cosmos-sdk -I=../proto/okp4 $(find ../proto -type f -name '*.proto' | tr '\n' ' ') --grpc_python_out=okp4_grpc_client
+          mkdir -p ${{ matrix.target.name }}
+          poetry run python -m grpc_tools.protoc ${{ matrix.target.includes }} --grpc_python_out=${{ matrix.target.name }}
 
       - name: Build project
-        working-directory: ${{env.WORK_DIR}}
+        working-directory: ./python/${{ matrix.target.name }}
         run: |
           poetry build
