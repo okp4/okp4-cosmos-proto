@@ -23,12 +23,18 @@ plugins:
               hasChanged: true
               numMatches: 1
               numReplacements: 1
-        - files: [python/pyproject.toml]
+        - files:
+            - python/cosmos_sdk_grpc_client/pyproject.toml
+            - python/okp4_grpc_client/pyproject.toml
           from: ^version = ".+"
           to: version = "${nextRelease.version}"
           countMatches: true
           results:
-            - file: python/pyproject.toml
+            - file: python/cosmos_sdk_grpc_client/pyproject.toml
+              hasChanged: true
+              numMatches: 1
+              numReplacements: 1
+            - file: python/okp4_grpc_client/pyproject.toml
               hasChanged: true
               numMatches: 1
               numReplacements: 1
