@@ -1,6 +1,6 @@
 # ØKP4 CØSMOS proto
 
-> Python gRPC client for ØKP4 and by extension, CØSMOS based blockchains.
+> Python gRPC client for ØKP4 specific modules of our CØSMOS SDK based blockchain.
 
 [![build](https://github.com/okp4/okp4-cosmos-proto/actions/workflows/build.yml/badge.svg)](https://github.com/okp4/okp4-cosmos-proto/actions/workflows/build.yml)
 [![PyPI](https://img.shields.io/pypi/v/okp4-grpc-client)](https://pypi.org/project/okp4-grpc-client/)
@@ -8,7 +8,7 @@
 
 ## Purpose
 
-Provides Python [gRPC clients](https://grpc.io/docs/languages/python/quickstart/) for ØKP4 and by extension, CØSMOS based blockchains generated from their Protobuf definitions.
+Provides Python [gRPC clients](https://grpc.io/docs/languages/python/quickstart/) for ØKP4 and by extension, [CØSMOS SDK](https://docs.cosmos.network) based blockchains generated from their Protobuf definitions.
 
 ## Quick Start
 

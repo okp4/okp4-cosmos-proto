@@ -116,8 +116,13 @@ jobs:
   publish-pypi:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-20.04
-    env:
-      WORK_DIR: ./python
+    strategy:
+      matrix:
+        target:
+          - name: cosmos_sdk_grpc_client
+            includes: "-I=../../proto/cosmos-sdk $(find ../../proto/cosmos-sdk -type f -name '*.proto' | tr '\n' ' ')"
+          - name: okp4_grpc_client
+            includes: "-I=../../proto/cosmos-sdk -I=../../proto/okp4 $(find ../../proto -type f -name '*.proto' | tr '\n' ' ')"
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -136,14 +141,14 @@ jobs:
           poetry-version: 1.1.11
 
       - name: Publish package
-        working-directory: ${{env.WORK_DIR}}
+        working-directory: ./python/${{ matrix.target.name }}
         run: |
           poetry install
 
-          mkdir -p okp4_grpc_client
-          poetry run python -m grpc_tools.protoc -I=../proto/cosmos-sdk -I=../proto/okp4 $(find ../proto -type f -name '*.proto' | tr '\n' ' ') --grpc_python_out=okp4_grpc_client
+          mkdir -p ${{ matrix.target.name }}
+          poetry run python -m grpc_tools.protoc ${{ matrix.target.includes }} --grpc_python_out=${{ matrix.target.name }}
 
           poetry build
 
-          echo "🚀 Publishing pypi package"
+          echo "🚀 Publishing pypi package '${{ matrix.target.name }}'"
           poetry publish  -u __token__ -p "${{ secrets.PYPI_API_TOKEN }}"

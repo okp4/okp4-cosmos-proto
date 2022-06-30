@@ -7,4 +7,5 @@ build
 node_modules
 dist
 gen-ts
-okp4_grpc_client
+python/okp4_grpc_client/okp4_grpc_client
+python/cosmos_sdk_grpc_client/cosmos_sdk_grpc_client
