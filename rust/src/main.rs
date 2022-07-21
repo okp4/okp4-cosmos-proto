@@ -23,13 +23,11 @@ static QUIET: AtomicBool = AtomicBool::new(false);
 // working directory.
 
 /// The directory generated cosmos-sdk proto files go into in this repo
-const COSMOS_SDK_PROTO_DIR: &str = "../gen_rust";
-/// Directory where the cosmos-sdk submodule is located
+const OUTPUT_DIR: &str = "../gen_rust";
+/// Directory where the cosmos-sdk proto are located
 const COSMOS_SDK_DIR: &str = "../proto/cosmos-sdk";
-/// Directory where the cosmos/ibc-go submodule is located
-// const IBC_DIR: &str = "../ibc-go";
-/// Directory where the submodule is located
-//const WASMD_DIR: &str = "../wasmd";
+/// Directory where the okp4 proto are located
+const OKP4_DIR: &str = "../proto/okp4";
 
 /// A temporary directory for proto building
 const TMP_BUILD_DIR: &str = "/tmp/tmp-protobuf/";
@@ -38,7 +36,8 @@ const TMP_BUILD_DIR: &str = "/tmp/tmp-protobuf/";
 
 /// Protos belonging to these Protobuf packages will be excluded
 /// (i.e. because they are sourced from `tendermint-proto`)
-const EXCLUDED_PROTO_PACKAGES: &[&str] = &["gogoproto", "google", "tendermint"];
+const EXCLUDED_PROTO_PACKAGES_COSMOS: &[&str] = &["gogoproto", "google", "tendermint"];
+const EXCLUDED_PROTO_PACKAGES_OKP4: &[&str] = &["gogoproto", "google", "tendermint", "cosmos", "cosmos_proto"];
 
 /// Log info to the console (if `QUIET` is disabled)
 // TODO(tarcieri): use a logger for this
@@ -59,26 +58,27 @@ fn main() {
     }
 
     let tmp_build_dir: PathBuf = TMP_BUILD_DIR.parse().unwrap();
-    let proto_dir: PathBuf = COSMOS_SDK_PROTO_DIR.parse().unwrap();
+    let proto_dir: PathBuf = OUTPUT_DIR.parse().unwrap();
 
     if tmp_build_dir.exists() {
         fs::remove_dir_all(tmp_build_dir.clone()).unwrap();
     }
 
     let temp_sdk_dir = tmp_build_dir.join("cosmos-sdk");
-    let temp_ibc_dir = tmp_build_dir.join("ibc-go");
+    let temp_okp4_dir = tmp_build_dir.join("okp4");
     // let temp_wasmd_dir = tmp_build_dir.join("wasmd");
 
     fs::create_dir_all(&temp_sdk_dir).unwrap();
-    fs::create_dir_all(&temp_ibc_dir).unwrap();
+    fs::create_dir_all(&temp_okp4_dir).unwrap();
     // fs::create_dir_all(&temp_wasmd_dir).unwrap();
 
     compile_sdk_protos_and_services(&temp_sdk_dir);
+    compile_okp4_protos_and_services(&temp_okp4_dir);
     // compile_ibc_protos_and_services(&temp_ibc_dir);
     // compile_wasmd_proto_and_services(&temp_wasmd_dir);
 
-    copy_generated_files(&temp_sdk_dir, &proto_dir.join("cosmos-sdk"));
-    copy_generated_files(&temp_ibc_dir, &proto_dir.join("ibc-go"));
+    copy_generated_files(&temp_sdk_dir, &proto_dir.join("cosmos-sdk"), EXCLUDED_PROTO_PACKAGES_COSMOS);
+    copy_generated_files(&temp_okp4_dir, &proto_dir.join("okp4"), EXCLUDED_PROTO_PACKAGES_OKP4);
     // copy_generated_files(&temp_wasmd_dir, &proto_dir.join("wasmd"));
 
 }
@@ -125,7 +125,7 @@ fn compile_sdk_protos_and_services(out_dir: &Path) {
     let includes: Vec<PathBuf> = proto_includes_paths.iter().map(PathBuf::from).collect();
 
     // Compile all of the proto files, along with grpc service clients
-    info!("Compiling proto definitions and clients for GRPC services!");
+    info!("(comsmos) Compiling proto definitions and clients for GRPC services!");
     tonic_build::configure()
         .build_client(true)
         .build_server(true)
@@ -137,6 +137,47 @@ fn compile_sdk_protos_and_services(out_dir: &Path) {
     info!("=> Done!");
 }
 
+fn compile_okp4_protos_and_services(out_dir: &Path) {
+    info!(
+        "Compiling cosmos-sdk .proto files to Rust into '{}'...",
+        out_dir.display()
+    );
+
+    let okp4_dir = Path::new(OKP4_DIR);
+    let cosmos_sdk_dir = Path::new(COSMOS_SDK_DIR);
+
+    let proto_includes_paths = [
+        //format!("{}/../proto", root),
+        format!("{}", cosmos_sdk_dir.display()),
+        format!("{}", okp4_dir.display()),
+        // format!("{}/third_party/proto", sdk_dir.display()),
+    ];
+
+    // Paths
+    let proto_paths = [
+        //format!("{}/../proto/definitions/mock", root),
+        format!("{}", okp4_dir.display()),
+    ];
+
+    // List available proto files
+    let mut protos: Vec<PathBuf> = vec![];
+    collect_protos(&proto_paths, &mut protos);
+
+    // List available paths for dependencies
+    let includes: Vec<PathBuf> = proto_includes_paths.iter().map(PathBuf::from).collect();
+
+    // Compile all of the proto files, along with grpc service clients
+    info!("(okp4) Compiling proto definitions and clients for GRPC services!");
+    tonic_build::configure()
+        .build_client(true)
+        .build_server(true)
+        .out_dir(out_dir)
+        .extern_path(".tendermint", "::tendermint_proto")
+        .compile(&protos, &includes)
+        .unwrap();
+
+    info!("=> Done!");
+}
 /// Any errors encountered will cause failure for the path provided to WalkDir::new()
 fn collect_protos(proto_paths: &[String], protos: &mut Vec<PathBuf>) {
     for proto_path in proto_paths {
@@ -155,7 +196,7 @@ fn collect_protos(proto_paths: &[String], protos: &mut Vec<PathBuf>) {
     }
 }
 
-fn copy_generated_files(from_dir: &Path, to_dir: &Path) {
+fn copy_generated_files(from_dir: &Path, to_dir: &Path, excluded_pkg: &[&str]) {
     info!("Copying generated files into '{}'...", to_dir.display());
 
     // Remove old compiled files
@@ -172,7 +213,7 @@ fn copy_generated_files(from_dir: &Path, to_dir: &Path) {
         .map(|e| {
             let filename = e.file_name().to_os_string().to_str().unwrap().to_string();
             filenames.push(filename.clone());
-            copy_and_patch(e.path(), format!("{}/{}", to_dir.display(), &filename))
+            copy_and_patch(e.path(), format!("{}/{}", to_dir.display(), &filename), excluded_pkg)
         })
         .filter_map(|e| e.err())
         .collect::<Vec<_>>();
@@ -186,7 +227,7 @@ fn copy_generated_files(from_dir: &Path, to_dir: &Path) {
     }
 }
 
-fn copy_and_patch(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> io::Result<()> {
+fn copy_and_patch(src: impl AsRef<Path>, dest: impl AsRef<Path>, excluded_pkg : &[&str]) -> io::Result<()> {
     /// Regex substitutions to apply to the prost-generated output
     const REPLACEMENTS: &[(&str, &str)] = &[
         // Use `tendermint-proto` proto definitions
@@ -215,7 +256,7 @@ fn copy_and_patch(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> io::Result<(
     ];
 
     // Skip proto files belonging to `EXCLUDED_PROTO_PACKAGES`
-    for package in EXCLUDED_PROTO_PACKAGES {
+    for package in excluded_pkg {
         if let Some(filename) = src.as_ref().file_name().and_then(OsStr::to_str) {
             if filename.starts_with(&format!("{}.", package)) {
                 return Ok(());
