@@ -66,20 +66,15 @@ fn main() {
 
     let temp_sdk_dir = tmp_build_dir.join("cosmos-sdk");
     let temp_okp4_dir = tmp_build_dir.join("okp4");
-    // let temp_wasmd_dir = tmp_build_dir.join("wasmd");
 
     fs::create_dir_all(&temp_sdk_dir).unwrap();
     fs::create_dir_all(&temp_okp4_dir).unwrap();
-    // fs::create_dir_all(&temp_wasmd_dir).unwrap();
 
     compile_sdk_protos_and_services(&temp_sdk_dir);
     compile_okp4_protos_and_services(&temp_okp4_dir);
-    // compile_ibc_protos_and_services(&temp_ibc_dir);
-    // compile_wasmd_proto_and_services(&temp_wasmd_dir);
 
     copy_generated_files(&temp_sdk_dir, &proto_dir.join("cosmos-sdk"), EXCLUDED_PROTO_PACKAGES_COSMOS);
     copy_generated_files(&temp_okp4_dir, &proto_dir.join("okp4"), EXCLUDED_PROTO_PACKAGES_OKP4);
-    // copy_generated_files(&temp_wasmd_dir, &proto_dir.join("wasmd"));
 
 }
 
