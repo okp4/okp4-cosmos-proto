@@ -23,7 +23,7 @@ static QUIET: AtomicBool = AtomicBool::new(false);
 // working directory.
 
 /// The directory generated cosmos-sdk proto files go into in this repo
-const OUTPUT_DIR: &str = "../gen_rust";
+const OUTPUT_DIR: &str = "./";
 /// Directory where the cosmos-sdk proto are located
 const COSMOS_SDK_DIR: &str = "../proto/cosmos-sdk";
 /// Directory where the okp4 proto are located
@@ -73,8 +73,8 @@ fn main() {
     compile_sdk_protos_and_services(&temp_sdk_dir);
     compile_okp4_protos_and_services(&temp_okp4_dir);
 
-    copy_generated_files(&temp_sdk_dir, &proto_dir.join("cosmos-sdk"), EXCLUDED_PROTO_PACKAGES_COSMOS);
-    copy_generated_files(&temp_okp4_dir, &proto_dir.join("okp4"), EXCLUDED_PROTO_PACKAGES_OKP4);
+    copy_generated_files(&temp_sdk_dir, &proto_dir.join("cosmos_sdk_grpc_client").join("src"), EXCLUDED_PROTO_PACKAGES_COSMOS);
+    copy_generated_files(&temp_okp4_dir, &proto_dir.join("okp4_grpc_client").join("src"), EXCLUDED_PROTO_PACKAGES_OKP4);
 
 }
 
