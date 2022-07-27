@@ -1,11 +1,7 @@
-//! Build CosmosSDK/Tendermint/IBC proto files. This build script clones the CosmosSDK version
-//! specified in the COSMOS_SDK_REV constant and then uses that to build the required
-//! proto files for further compilation. This is based on the proto-compiler code
-//! in github.com/informalsystems/ibc-rs
+
 
 use regex::Regex;
 use std::{
-    env,
     ffi::OsStr,
     fs::{self, create_dir_all, remove_dir_all},
     io,
@@ -15,7 +11,6 @@ use std::{
 use walkdir::WalkDir;
 
 /// Suppress log messages
-// TODO(tarcieri): use a logger for this
 static QUIET: AtomicBool = AtomicBool::new(false);
 
 
@@ -40,7 +35,6 @@ const EXCLUDED_PROTO_PACKAGES_COSMOS: &[&str] = &["gogoproto", "google", "tender
 const EXCLUDED_PROTO_PACKAGES_OKP4: &[&str] = &["gogoproto", "google", "tendermint", "cosmos", "cosmos_proto"];
 
 /// Log info to the console (if `QUIET` is disabled)
-// TODO(tarcieri): use a logger for this
 macro_rules! info {
     ($msg:expr) => {
         if !is_quiet() {
@@ -53,9 +47,6 @@ macro_rules! info {
 }
 
 fn main() {
-    if is_github() {
-        set_quiet();
-    }
 
     let tmp_build_dir: PathBuf = TMP_BUILD_DIR.parse().unwrap();
     let proto_dir: PathBuf = OUTPUT_DIR.parse().unwrap();
@@ -80,16 +71,6 @@ fn main() {
 
 fn is_quiet() -> bool {
     QUIET.load(atomic::Ordering::Relaxed)
-}
-
-fn set_quiet() {
-    QUIET.store(true, atomic::Ordering::Relaxed);
-}
-
-/// Parse `--github` flag passed to `proto-build` on the eponymous GitHub Actions job.
-/// Disables `info`-level log messages, instead outputting only a commit message.
-fn is_github() -> bool {
-    env::args().any(|arg| arg == "--github")
 }
 
 fn compile_sdk_protos_and_services(out_dir: &Path) {

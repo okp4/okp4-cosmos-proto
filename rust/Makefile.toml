@@ -50,7 +50,7 @@ args = ["clean"]
 command = "cargo"
 
 [tasks.build]
-args = ["run"]
+args = ["build", "--release", "--locked"]
 command = "cargo"
 
 [tasks.build-coverage]
@@ -76,4 +76,8 @@ grcov . --binary-path ./target/debug/ -s . -t lcov --branch --ignore-not-existin
 
 [tasks.publish]
 args = ["publish", "--token", "${CARGO_API_TOKEN}"]
+command = "cargo"
+
+[tasks.generate-proto]
+args = ["run"]
 command = "cargo"

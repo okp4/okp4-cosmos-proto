@@ -60,4 +60,6 @@ plugins:
         - kotlin/gradle.properties
         - ts/package.json
         - python/pyproject.toml
+        - rust/cosmos_sdk_grpc_client/Cargo.toml
+        - rust/okp4_grpc_client/Cargo.toml
       message: "chore(release): perform release ${nextRelease.version}"
