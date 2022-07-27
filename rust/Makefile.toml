@@ -74,9 +74,16 @@ script = '''
 grcov . --binary-path ./target/debug/ -s . -t lcov --branch --ignore-not-existing --ignore "*cargo*" -o coverage.lcov
 '''
 
-[tasks.publish]
-args = ["publish", "--token", "${CARGO_API_TOKEN}"]
+[tasks.publish-cosmos]
+args = ["publish", "--token", "${CARGO_API_TOKEN}", "--manifest-path", "cosmos_sdk_grpc_client/Cargo.toml"]
 command = "cargo"
+
+[tasks.publish-okp4]
+args = ["publish", "--token", "${CARGO_API_TOKEN}", "--manifest-path", "okp4_grpc_client/Cargo.toml"]
+command = "cargo"
+
+[tasks.publish]
+dependencies = ["publish-cosmos", "publish-okp4"]
 
 [tasks.generate-proto]
 args = ["run"]
