@@ -83,7 +83,7 @@ args = ["publish", "--token", "${CARGO_API_TOKEN}", "--manifest-path", "okp4_grp
 command = "cargo"
 
 [tasks.publish]
-dependencies = ["publish-cosmos", "publish-okp4"]
+dependencies = ["generate-proto", "publish-cosmos", "publish-okp4"]
 
 [tasks.generate-proto]
 args = ["run"]
