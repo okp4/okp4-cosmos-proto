@@ -38,6 +38,21 @@ plugins:
               hasChanged: true
               numMatches: 1
               numReplacements: 1
+        - files:
+            - rust/cosmos_sdk_grpc_client/Cargo.toml
+            - rust/okp4_grpc_client/Cargo.toml
+          from: ^version = ".+"
+          to: version = "${nextRelease.version}"
+          countMatches: true
+          results:
+            - file: rust/cosmos_sdk_grpc_client/Cargo.toml
+              hasChanged: true
+              numMatches: 1
+              numReplacements: 1
+            - file: rust/okp4_grpc_client/Cargo.toml
+              hasChanged: true
+              numMatches: 1
+              numReplacements: 1
   - "@semantic-release/github"
   - - "@semantic-release/git"
     - assets:
@@ -45,4 +60,6 @@ plugins:
         - kotlin/gradle.properties
         - ts/package.json
         - python/pyproject.toml
+        - rust/cosmos_sdk_grpc_client/Cargo.toml
+        - rust/okp4_grpc_client/Cargo.toml
       message: "chore(release): perform release ${nextRelease.version}"

@@ -9,3 +9,7 @@ dist
 gen-ts
 python/okp4_grpc_client/okp4_grpc_client
 python/cosmos_sdk_grpc_client/cosmos_sdk_grpc_client
+
+rust/target/
+rust/cosmos_sdk_grpc_client/src/
+rust/okp4_grpc_client/src/

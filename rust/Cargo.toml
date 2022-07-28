@@ -1,0 +1,15 @@
+[package]
+name = "proto-build"
+version = "0.1.0"
+authors = ["OKP4"]
+edition = "2021"
+publish = false
+
+
+[dependencies]
+prost = "0.10"
+prost-build = "0.10"
+tonic = "0.7"
+tonic-build = "0.7"
+regex = "1"
+walkdir = "2"
