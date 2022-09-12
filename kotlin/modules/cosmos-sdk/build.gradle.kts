@@ -4,6 +4,7 @@ val slf4jLogger = LoggerFactory.getLogger("some-logger")
 
 plugins {
     signing
+    `maven-publish`
 }
 
 sourceSets {
@@ -12,6 +13,11 @@ sourceSets {
             srcDir("../../../proto/cosmos-sdk")
         }
     }
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 tasks {
@@ -29,12 +35,36 @@ tasks {
 
 publishing {
     publications {
-        create<MavenPublication>("cosmos") {
+        create<MavenPublication>("mavenJavaCosmos") {
+            from(components["java"])
+
             groupId = rootProject.group as String?
             artifactId = "cosmos-sdk"
             version = rootProject.version as String?
 
-            artifact(tasks.jar)
+            pom {
+                name.set("cosmos-sdk")
+                description.set("Provides Kotlin gRPC clients for ØKP4 and by extension, CØSMOS based blockchains generated from their Protobuf definitions.")
+                url.set("https://github.com/okp4/okp4-cosmos-proto")
+                licenses {
+                    license {
+                        name.set("BSD 3-Clause License")
+                        url.set("https://opensource.org/licenses/BSD-3-Clause")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("bot-anik")
+                        name.set("Bot Anik")
+                        email.set("ops@okp4.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git@github.com:okp4/okp4-cosmos-proto.git")
+                    developerConnection.set("scm:git:ssh://github.com:okp4/okp4-cosmos-proto.git")
+                    url.set("https://github.com/okp4/okp4-cosmos-proto.git")
+                }
+            }
         }
     }
 }
@@ -46,6 +76,6 @@ signing {
     if ( keyId == "" || password == "" || secretKeyRingFile == "" ) {
         slf4jLogger.warn("Archives will not be signed. Reason is signing properties not set")
     } else {
-        sign(publishing.publications)
+        sign(publishing.publications["mavenJavaCosmos"])
     }
 }
