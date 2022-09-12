@@ -1,3 +1,11 @@
+import org.slf4j.LoggerFactory
+
+val slf4jLogger = LoggerFactory.getLogger("some-logger")
+
+plugins {
+    signing
+}
+
 sourceSets {
     main {
         proto {
@@ -32,5 +40,16 @@ publishing {
 
             artifact(tasks.jar)
         }
+    }
+}
+
+signing {
+    val keyId = project.property("signing.keyId")
+    val password = project.property("signing.password")
+    val secretKeyRingFile = project.property("signing.secretKeyRingFile")
+    if ( keyId == "" || password == "" || secretKeyRingFile == "" ) {
+        slf4jLogger.warn("Archives will not be signed. Reason is signing properties not set")
+    } else {
+        sign(publishing.publications)
     }
 }
