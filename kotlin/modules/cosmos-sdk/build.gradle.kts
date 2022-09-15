@@ -74,12 +74,19 @@ publishing {
 }
 
 signing {
+    val ciSigningKey = project.findProperty("ciSigningKey")
+    val ciSigningPassword = project.findProperty("ciSigningPassword")
+    if ( ciSigningKey != null && ciSigningPassword != null ) {
+        useInMemoryPgpKeys(ciSigningKey as String, ciSigningPassword as String)
+        sign(publishing.publications["mavenJavaOkp4"])
+    } else {
         val keyId = project.property("signing.keyId")
         val password = project.property("signing.password")
         val secretKeyRingFile = project.property("signing.secretKeyRingFile")
-    if ( keyId == "" || password == "" || secretKeyRingFile == "" ) {
+        if ( keyId != "" && password != "" && secretKeyRingFile != "" ) {
+            sign(publishing.publications["mavenJavaCosmos"])
+        } else {
             slf4jLogger.warn("Archives will not be signed. Reason is signing properties not set")
-    } else {
-        sign(publishing.publications["mavenJavaCosmos"])
+        }
     }
 }
