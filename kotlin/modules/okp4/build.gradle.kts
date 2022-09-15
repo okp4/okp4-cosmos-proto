@@ -37,6 +37,10 @@ tasks {
     }
 }
 
+tasks.withType<GenerateModuleMetadata> {
+    enabled = false
+}
+
 publishing {
     publications {
 
@@ -75,11 +79,11 @@ publishing {
 }
 
 signing {
-    val keyId = project.property("signing.keyId")
-    val password = project.property("signing.password")
-    val secretKeyRingFile = project.property("signing.secretKeyRingFile")
+        val keyId = project.property("signing.keyId")
+        val password = project.property("signing.password")
+        val secretKeyRingFile = project.property("signing.secretKeyRingFile")
     if ( keyId == "" || password == "" || secretKeyRingFile == "" ) {
-        slf4jLogger.warn("Archives will not be signed. Reason is signing properties not set")
+            slf4jLogger.warn("Archives will not be signed. Reason is signing properties not set")
     } else {
         sign(publishing.publications["mavenJavaOkp4"])
     }
