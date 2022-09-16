@@ -42,6 +42,7 @@ jobs:
           ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.SONATYPE_USERNAME }}
           ORG_GRADLE_PROJECT_ciSigningKey: ${{ secrets.PGP_SECRET }}
           ORG_GRADLE_PROJECT_ciSigningPassword: ${{ secrets.PGP_PASSPHRASE }}
+          ORG_GRADLE_PROJECT_repositoryUrl: https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/
         run: |
           cd kotlin
           ./gradlew publish -Prelease
