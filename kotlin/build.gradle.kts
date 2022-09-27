@@ -42,7 +42,6 @@ subprojects {
     apply {
         plugin("com.google.protobuf")
         plugin("org.jetbrains.kotlin.jvm")
-        plugin("maven-publish")
     }
 
     repositories {
@@ -98,19 +97,6 @@ subprojects {
                 }
                 it.builtins {
                     id("kotlin")
-                }
-            }
-        }
-    }
-
-    configure<PublishingExtension> {
-        repositories {
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/okp4/${rootProject.name}")
-                credentials {
-                    username = project.findProperty("maven.credentials.username") as String?
-                    password = project.findProperty("maven.credentials.password") as String?
                 }
             }
         }
