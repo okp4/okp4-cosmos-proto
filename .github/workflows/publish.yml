@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   publish-maven:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -43,7 +43,7 @@ jobs:
           build-root-directory: kotlin
 
   publish-npm-okp4:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -84,7 +84,7 @@ jobs:
 
   publish-npm-public:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -115,7 +115,7 @@ jobs:
 
   publish-crates:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -138,7 +138,7 @@ jobs:
 
   publish-pypi:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         target:
