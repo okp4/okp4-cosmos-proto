@@ -61,10 +61,8 @@ jobs:
 
   build-typescript:
     runs-on: ubuntu-22.04
+    needs: generate-proto
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-
       - name: Setup node environment (for building)
         uses: actions/setup-node@v3
         with:
