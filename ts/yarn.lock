@@ -572,10 +572,10 @@ process-nextick-args@~2.0.0:
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.1.tgz#7820d9b16120cc55ca9ae7792680ae7dba6d7fe2"
   integrity sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==
 
-protoc-gen-grpc-web@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/protoc-gen-grpc-web/-/protoc-gen-grpc-web-1.3.0.tgz#3127b36b7421a26b8752167063c9c23913810484"
-  integrity sha512-jCMfBEswTZmnTt+x9vFU4nj+nhoAenU1H7cYRI8WGV4cS1TcUTReqk4aFXmsDuRla4gWdu1A+rQ83v3kj4DuLQ==
+protoc-gen-grpc-web@^1.4.0:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/protoc-gen-grpc-web/-/protoc-gen-grpc-web-1.4.1.tgz#87be2ecf3ec1b917ad2e4462f8f0697c840339e6"
+  integrity sha512-r76954vQYM3x/BY0LCW0jrqjl7aG4biDip4Rqe/lPb/gwkws5Iy+XEIMuY8tDc7VXHPxrBBG986vko6r4asXpQ==
   dependencies:
     download "^8.0.0"
     fs-extra "^9.0.1"
