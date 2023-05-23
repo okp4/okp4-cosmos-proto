@@ -1,0 +1,9 @@
+{
+  "proto": [ 
+    "buf.build/okp4/okp4d",
+    "buf.build/cosmos/cosmos-sdk:v0.47.0"
+  ],
+  "template": [ 
+    "buf.gen.ts.yaml"
+  ]
+}
