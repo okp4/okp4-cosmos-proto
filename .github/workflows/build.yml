@@ -14,6 +14,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  generate-proto:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        proto: 
+          - "buf.build/okp4/okp4d"
+          - "buf.build/cosmos/cosmos-sdk:v0.47.0"
+        template: 
+          - "buf.gen.ts.yaml"
+
+    steps: 
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Configure buf
+        uses: bufbuild/buf-setup-action@v1
+
+      - name: Generate proto
+        run: |
+          buf generate --template ${{ matrix.template }} ${{ matrix.proto }}
+
   build-kotlin:
     runs-on: ubuntu-22.04
     steps:
@@ -51,9 +72,6 @@ jobs:
 
       - name: Fetch dependencies
         run: yarn --cwd ts
-
-      - name: Generate sources
-        run: yarn --cwd ts generate
 
       - name: Build
         run: yarn --cwd ts build
