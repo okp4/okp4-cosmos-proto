@@ -106,13 +106,9 @@ jobs:
 
   build-python:
     runs-on: ubuntu-22.04
+    needs: matrix
     strategy:
-      matrix:
-        target:
-          - name: cosmos_sdk_grpc_client
-            includes: "-I=../../proto/cosmos-sdk $(find ../../proto/cosmos-sdk -type f -name '*.proto' | tr '\n' ' ')"
-          - name: okp4_grpc_client
-            includes: "-I=../../proto/cosmos-sdk -I=../../proto/okp4 $(find ../../proto -type f -name '*.proto' | tr '\n' ' ')"
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -126,18 +122,19 @@ jobs:
         with:
           poetry-version: 1.1.11
 
+      - name: Configure buf
+        uses: bufbuild/buf-setup-action@v1
+
+      - name: Generate proto
+        run: |
+          buf generate --template buf.gen.python.yaml ${{ matrix.proto.buf }} -o ${{ matrix.proto.directory.python }}
+
       - name: Install project dependencies
-        working-directory: ./python/${{ matrix.target.name }}
+        working-directory: ./${{ matrix.proto.directory.python }}
         run: |
           poetry install
 
-      - name: Install project dependencies
-        working-directory: ./python/${{ matrix.target.name }}
-        run: |
-          mkdir -p ${{ matrix.target.name }}
-          poetry run python -m grpc_tools.protoc ${{ matrix.target.includes }} --grpc_python_out=${{ matrix.target.name }}
-
       - name: Build project
-        working-directory: ./python/${{ matrix.target.name }}
+        working-directory: ./${{ matrix.proto.directory.python }}
         run: |
           poetry build
