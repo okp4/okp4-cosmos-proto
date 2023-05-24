@@ -1,7 +1,17 @@
 {
   "proto": [ 
-    "buf.build/okp4/okp4d",
-    "buf.build/cosmos/cosmos-sdk:v0.47.0"
+    {
+      "buf": "buf.build/okp4/okp4d",
+      "directory": {
+        "ts": "ts/okp4-grpc-client"
+      }
+    },
+    {
+      "buf": "buf.build/cosmos/cosmos-sdk:v0.47.0",
+      "directory": {
+        "ts": "ts/cosmos-sdk-grpc-client"
+      }
+    }
   ],
   "template": [ 
     "buf.gen.ts.yaml"

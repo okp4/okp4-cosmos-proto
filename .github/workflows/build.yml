@@ -23,7 +23,7 @@ jobs:
       - id: set-matrix
         run: echo "::set-output name=matrix::$(cat proto.json | jq -c .)"
 
-  generate-proto:
+  build-typescript:
     runs-on: ubuntu-22.04
     needs: matrix
     strategy:
@@ -37,7 +37,18 @@ jobs:
 
       - name: Generate proto
         run: |
-          buf generate --template ${{ matrix.template }} ${{ matrix.proto }}
+          buf generate --template ${{ matrix.template }} ${{ matrix.proto.buf }} -o ${{ matrix.proto.directory.ts }}
+
+      - name: Setup node environment (for building)
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.14.0
+
+      - name: Fetch dependencies
+        run: yarn --cwd ${{ matrix.proto.directory.ts }}
+
+      - name: Build
+        run: yarn --cwd ${{ matrix.proto.directory.ts }} build
 
   build-kotlin:
     runs-on: ubuntu-22.04
@@ -62,21 +73,6 @@ jobs:
         with:
           arguments: build -x check
           build-root-directory: kotlin
-
-  build-typescript:
-    runs-on: ubuntu-22.04
-    needs: generate-proto
-    steps:
-      - name: Setup node environment (for building)
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.14.0
-
-      - name: Fetch dependencies
-        run: yarn --cwd ts
-
-      - name: Build
-        run: yarn --cwd ts build
 
   build-rust:
     runs-on: ubuntu-22.04
