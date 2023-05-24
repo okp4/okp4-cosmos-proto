@@ -12,8 +12,5 @@
         "ts": "ts/cosmos-sdk-grpc-client"
       }
     }
-  ],
-  "template": [ 
-    "buf.gen.ts.yaml"
   ]
 }

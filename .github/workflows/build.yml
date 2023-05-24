@@ -37,7 +37,7 @@ jobs:
 
       - name: Generate proto
         run: |
-          buf generate --template ${{ matrix.template }} ${{ matrix.proto.buf }} -o ${{ matrix.proto.directory.ts }}
+          buf generate --template buf.gen.ts.yaml ${{ matrix.proto.buf }} -o ${{ matrix.proto.directory.ts }}
 
       - name: Setup node environment (for building)
         uses: actions/setup-node@v3
