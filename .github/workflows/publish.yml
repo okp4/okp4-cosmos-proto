@@ -172,13 +172,9 @@ jobs:
   publish-pypi:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        target:
-          - name: cosmos_sdk_grpc_client
-            includes: "-I=../../proto/cosmos-sdk $(find ../../proto/cosmos-sdk -type f -name '*.proto' | tr '\n' ' ')"
-          - name: okp4_grpc_client
-            includes: "-I=../../proto/cosmos-sdk -I=../../proto/okp4 $(find ../../proto -type f -name '*.proto' | tr '\n' ' ')"
+    needs: matrix
+    strategy: 
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -194,17 +190,22 @@ jobs:
       - name: Install Python Poetry
         uses: abatilo/actions-poetry@v2.3.0
         with:
-          poetry-version: 1.1.11
+          poetry-version: 1.4.1
+      
+      - name: Configure buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+  
+      - name: Generate proto
+        run: |
+          buf generate --template buf.gen.python.yaml ${{ matrix.proto.buf }} -o ${{ matrix.proto.directory.python }}
 
       - name: Publish package
-        working-directory: ./python/${{ matrix.target.name }}
+        working-directory: ./${{ matrix.proto.directory.python }}/../
         run: |
           poetry install
-
-          mkdir -p ${{ matrix.target.name }}
-          poetry run python -m grpc_tools.protoc ${{ matrix.target.includes }} --grpc_python_out=${{ matrix.target.name }}
-
           poetry build
 
-          echo "🚀 Publishing pypi package '${{ matrix.target.name }}'"
+          echo "🚀 Publishing pypi package '${{ matrix.proto.directory.python }}'"
           poetry publish  -u __token__ -p "${{ secrets.PYPI_API_TOKEN }}"
