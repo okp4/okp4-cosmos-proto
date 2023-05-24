@@ -66,6 +66,8 @@ jobs:
 
       - name: Configure buf
         uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
 
       - name: Generate proto
         run: |
@@ -117,6 +119,8 @@ jobs:
 
       - name: Configure buf
         uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
 
       - name: Generate proto
         run: |
