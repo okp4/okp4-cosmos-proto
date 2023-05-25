@@ -5,7 +5,7 @@ use std::{
 };
 
 fn main() {
-    let proto_dir: PathBuf = "cosmos-sdk-grpc-client/src/gen/".parse().unwrap();
+    let proto_dir: PathBuf = "../cosmos-sdk-grpc-client/src/gen/".parse().unwrap();
     apply_patches(&proto_dir);
 }
 

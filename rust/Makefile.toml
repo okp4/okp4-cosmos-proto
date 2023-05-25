@@ -51,8 +51,7 @@ args = ["clean"]
 command = "cargo"
 
 [tasks.build]
-args = ["build", "--release", "--locked"]
-command = "cargo"
+workspace = true
 
 [tasks.build-coverage]
 args = ["build"]
@@ -77,10 +76,6 @@ grcov . --binary-path ./target/debug/ -s . -t lcov --branch --ignore-not-existin
 
 [tasks.publish]
 workspace = true
-
-[tasks.patch]
-args = ["run", "--manifest-path", "patch/Cargo.toml"]
-command = "cargo"
 
 [tasks.proto-clean]
 script = '''

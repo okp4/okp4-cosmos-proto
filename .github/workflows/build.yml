@@ -78,6 +78,9 @@ jobs:
 
   build-rust:
     runs-on: ubuntu-22.04
+    needs: matrix
+    strategy:
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -102,9 +105,20 @@ jobs:
       - name: Install cargo make
         uses: davidB/rust-cargo-make@v1
 
+      - name: Configure buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Generate proto
+        run: |
+          BUF_YAML=$(grep -q "cosmos/cosmos-sdk" <<< "${{ matrix.proto.buf }}" && echo "buf.gen.rust.cosmos.yaml" || echo "buf.gen.rust.yaml")
+          buf generate --template $BUF_YAML ${{ matrix.proto.buf }} -o ${{ matrix.proto.directory.rust }}
+
       - name: Build rust
-        working-directory: ./rust
-        run: cargo make build
+        working-directory: ./${{ matrix.proto.directory.rust }}
+        run: |
+          cargo make build
 
   build-python:
     runs-on: ubuntu-22.04
