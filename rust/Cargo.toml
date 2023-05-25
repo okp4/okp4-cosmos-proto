@@ -1,8 +1,7 @@
 [workspace]
-members = ["cosmos_sdk_grpc_client", "okp4_grpc_client"]
+members = ["cosmos-sdk-grpc-client", "okp4-grpc-client", "patch"]
 
 [workspace.dependencies]
-prost = "0.10"
-prost-build = "0.10"
-tonic = "0.7"
-tonic-build = "0.7"
+prost = "0.11"
+prost-types = "0.11"
+tonic = "0.9"

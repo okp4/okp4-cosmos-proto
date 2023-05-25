@@ -13,5 +13,5 @@ Provides Rust [gRPC clients](https://docs.rs/tonic/latest/tonic/) for ØKP4 and 
 ## Quick Start
 
 ```sh
-cargo add okp4_grpc_client
+cargo add okp4-grpc-client
 ```

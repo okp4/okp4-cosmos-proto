@@ -1,5 +1,5 @@
 [package]
-name = "okp4_grpc_client"
+name = "okp4-grpc-client"
 description = "OKP4 CØSMOS gRPC client libraries based on Protobuf definitions."
 edition = "2021"
 license-file = "LICENSE"
@@ -10,7 +10,9 @@ authors = ["OKP4"]
 
 [dependencies]
 prost.workspace = true
+prost-types.workspace = true
 tonic.workspace = true
+cosmos-sdk-grpc-client = { path = "../cosmos-sdk-grpc-client" }
 
 [features]
 default = []

@@ -11,6 +11,4 @@ python/okp4_grpc_client/okp4_grpc_client
 python/cosmos_sdk_grpc_client/cosmos_sdk_grpc_client
 
 rust/target/
-rust/**/src/*
-rust/**/src/*
-!rust/**/lib.rs
+rust/**/src/gen/

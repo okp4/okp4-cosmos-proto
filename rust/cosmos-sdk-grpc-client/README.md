@@ -13,5 +13,5 @@ Provides Rust [gRPC clients](https://docs.rs/tonic/latest/tonic/) for [CØSMOS S
 ## Quick Start
 
 ```sh
-cargo add cosmos_sdk_grpc_client
+cargo add cosmos-sdk-grpc-client
 ```
