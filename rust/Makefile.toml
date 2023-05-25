@@ -84,7 +84,3 @@ command = "cargo"
 
 [tasks.publish]
 dependencies = ["generate-proto", "publish-cosmos", "publish-okp4"]
-
-[tasks.generate-proto]
-args = ["run"]
-command = "cargo"

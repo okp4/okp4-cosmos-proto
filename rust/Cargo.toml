@@ -1,15 +1,8 @@
-[package]
-name = "proto-build"
-version = "0.1.0"
-authors = ["OKP4"]
-edition = "2021"
-publish = false
+[workspace]
+members = ["cosmos_sdk_grpc_client", "okp4_grpc_client"]
 
-
-[dependencies]
+[workspace.dependencies]
 prost = "0.10"
 prost-build = "0.10"
 tonic = "0.7"
 tonic-build = "0.7"
-regex = "1"
-walkdir = "2"

@@ -9,5 +9,9 @@ version = "1.2.0"
 authors = ["OKP4"]
 
 [dependencies]
-prost = "0.10"
-tonic = "0.7"
+prost.workspace = true
+tonic.workspace = true
+
+[features]
+default = []
+## @@protoc_insertion_point(features)
