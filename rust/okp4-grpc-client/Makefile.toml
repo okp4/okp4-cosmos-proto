@@ -1,0 +1,3 @@
+[tasks.publish]
+args = ["publish", "--token", "${CARGO_API_TOKEN}"]
+command = "cargo"

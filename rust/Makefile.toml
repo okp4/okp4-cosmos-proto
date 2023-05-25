@@ -46,6 +46,7 @@ dependencies = ["lint-rust-format", "lint-rust", "lint-toml"]
 dependencies = ["format-rust", "format-toml"]
 
 [tasks.clean]
+dependencies = ["proto-clean"]
 args = ["clean"]
 command = "cargo"
 
@@ -75,11 +76,16 @@ grcov . --binary-path ./target/debug/ -s . -t lcov --branch --ignore-not-existin
 '''
 
 [tasks.publish]
-dependencies = ["patch"]
-args = ["publish", "--token", "${CARGO_API_TOKEN}"]
-command = "cargo"
+workspace = true
 
 [tasks.patch]
 args = ["run", "--manifest-path", "patch/Cargo.toml"]
 command = "cargo"
-workspace = false
+
+[tasks.proto-clean]
+script = '''
+rm -rf */src/gen
+'''
+
+[config]
+default_to_workspace = false
