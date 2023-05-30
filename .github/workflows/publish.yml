@@ -54,7 +54,7 @@ jobs:
   publish-npm-okp4:
     runs-on: ubuntu-22.04
     needs: matrix
-    strategy: 
+    strategy:
       matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
@@ -107,7 +107,7 @@ jobs:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-22.04
     needs: matrix
-    strategy: 
+    strategy:
       matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
@@ -162,6 +162,20 @@ jobs:
 
       - name: Install cargo make
         uses: davidB/rust-cargo-make@v1
+      
+      - name: Configure buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Generate proto
+        run: |
+          jq -c '.proto[]' proto.json | while read i; do
+            BUF=$(echo $i | jq -cr '.buf')
+            BUF_YAML=$(grep -q "cosmos/cosmos-sdk" <<< "$BUF" && echo "buf.gen.rust.cosmos.yaml" || echo "buf.gen.rust.yaml")
+            DIRECTORY=$(echo $i | jq -cr '.directory.rust')
+            buf generate --template $BUF_YAML $BUF -o $DIRECTORY
+          done
 
       - name: Publish packages
         working-directory: ./rust
@@ -173,7 +187,7 @@ jobs:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-22.04
     needs: matrix
-    strategy: 
+    strategy:
       matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
@@ -191,7 +205,7 @@ jobs:
         uses: abatilo/actions-poetry@v2.3.0
         with:
           poetry-version: 1.4.1
-      
+
       - name: Configure buf
         uses: bufbuild/buf-setup-action@v1
         with:

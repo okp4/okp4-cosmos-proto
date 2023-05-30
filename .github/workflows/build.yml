@@ -93,6 +93,7 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
+
       - name: Setup rust
         uses: actions-rs/toolchain@v1
         with:
@@ -115,7 +116,7 @@ jobs:
             BUF_YAML=$(grep -q "cosmos/cosmos-sdk" <<< "$BUF" && echo "buf.gen.rust.cosmos.yaml" || echo "buf.gen.rust.yaml")
             DIRECTORY=$(echo $i | jq -cr '.directory.rust')
             buf generate --template $BUF_YAML $BUF -o $DIRECTORY
-          done	
+          done
 
       - name: Build rust
         working-directory: ./rust
