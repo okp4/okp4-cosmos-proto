@@ -14,7 +14,6 @@ Generate gRPC clients for multiple targets based on [CØSMOS](https://github.com
 
 ## Targets
 
-- [Kotlin](kotlin/README.md)
 - [Typescript (grpc-web)](ts/README.md)
 - [Python (cosmos-sdk-grpc-client)](python/cosmos_sdk_grpc_client/README.md), [Python (okp4-grpc-client)](python/okp4_grpc_client/README.md)
 - [Rust (cosmos-sdk-grpc-client)](rust/cosmos-sdk-grpc-client/README.md), [Rust (okp4-grpc-client)](rust/okp4-grpc-client/README.md)
