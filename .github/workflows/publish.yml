@@ -162,7 +162,7 @@ jobs:
 
       - name: Install cargo make
         uses: davidB/rust-cargo-make@v1
-      
+
       - name: Configure buf
         uses: bufbuild/buf-setup-action@v1
         with:
@@ -210,7 +210,7 @@ jobs:
         uses: bufbuild/buf-setup-action@v1
         with:
           github_token: ${{ github.token }}
-  
+
       - name: Generate proto
         run: |
           buf generate --template buf.gen.python.yaml ${{ matrix.proto.buf }} -o ${{ matrix.proto.directory.python }}

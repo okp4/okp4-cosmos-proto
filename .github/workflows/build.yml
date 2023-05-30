@@ -28,7 +28,7 @@ jobs:
     needs: matrix
     strategy:
       matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
-    steps: 
+    steps:
       - name: Check out repository
         uses: actions/checkout@v3
 
