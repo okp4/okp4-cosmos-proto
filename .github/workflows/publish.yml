@@ -44,7 +44,7 @@ jobs:
       - name: Setup node environment (for publishing)
         uses: actions/setup-node@v3
         with:
-          node-version: 16.14.0
+          node-version: 16.19.0
           registry-url: "https://npm.pkg.github.com"
           scope: "@okp4"
 
@@ -97,7 +97,7 @@ jobs:
       - name: Setup node environment (for publishing)
         uses: actions/setup-node@v3
         with:
-          node-version: 16.14.0
+          node-version: 16.19.0
           registry-url: "https://registry.npmjs.org"
           scope: "@okp4"
 
