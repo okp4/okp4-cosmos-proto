@@ -10,40 +10,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  publish-maven:
+  matrix:
     runs-on: ubuntu-22.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-
-      - uses: actions/setup-java@v3
-        with:
-          distribution: "temurin"
-          java-version: "11"
-
-      - name: Configure gradle.properties
-        run: |
-          cat <<EOF >> kotlin/gradle.properties
-          maven.credentials.username=${{ secrets.MAVEN_REPOSITORY_USERNAME }}
-          maven.credentials.password=${{ secrets.MAVEN_REPOSITORY_PASSWORD }}
-          EOF
-
-      - name: Publish maven snapshot
-        if: "!contains(github.ref, 'refs/tags/')"
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: publish
-          build-root-directory: kotlin
-
-      - name: Publish maven release
-        if: contains(github.ref, 'refs/tags/')
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: publish -Prelease
-          build-root-directory: kotlin
+      - uses: actions/checkout@v2
+      - id: set-matrix
+        run: echo "::set-output name=matrix::$(cat proto.json | jq -c .)"
 
   publish-npm-okp4:
     runs-on: ubuntu-22.04
+    needs: matrix
+    strategy:
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -52,10 +32,19 @@ jobs:
         id: project_context
         uses: FranzDiebold/github-env-vars-action@v2.7.0
 
+      - name: Configure buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Generate proto
+        run: |
+          buf generate --template buf.gen.ts.yaml ${{ matrix.proto.buf }} -o ${{ matrix.proto.directory.ts }}
+
       - name: Setup node environment (for publishing)
         uses: actions/setup-node@v3
         with:
-          node-version: 16.14.0
+          node-version: 16.19.0
           registry-url: "https://npm.pkg.github.com"
           scope: "@okp4"
 
@@ -65,9 +54,9 @@ jobs:
 
           DATE=$(date +%Y%m%d%H%M%S)
 
-          yarn --cwd ts && yarn --cwd ts generate && yarn --cwd ts build
+          yarn --cwd ${{ matrix.proto.directory.ts }} && yarn --cwd ${{ matrix.proto.directory.ts }} build
 
-          publish=(yarn --cwd ts publish --no-git-tag-version --non-interactive)
+          publish=(yarn --cwd ${{ matrix.proto.directory.ts }} publish --no-git-tag-version --non-interactive)
 
           if [[ $GITHUB_REF == refs/tags/v* ]]; then
             publish+=(--tag latest)
@@ -85,6 +74,9 @@ jobs:
   publish-npm-public:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-22.04
+    needs: matrix
+    strategy:
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -93,10 +85,19 @@ jobs:
         id: project_context
         uses: FranzDiebold/github-env-vars-action@v2.7.0
 
+      - name: Configure buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Generate proto
+        run: |
+          buf generate --template buf.gen.ts.yaml ${{ matrix.proto.buf }} -o ${{ matrix.proto.directory.ts }}
+
       - name: Setup node environment (for publishing)
         uses: actions/setup-node@v3
         with:
-          node-version: 16.14.0
+          node-version: 16.19.0
           registry-url: "https://registry.npmjs.org"
           scope: "@okp4"
 
@@ -104,9 +105,9 @@ jobs:
         run: |
           set -eu
 
-          yarn --cwd ts && yarn --cwd ts generate && yarn --cwd ts build
+          yarn --cwd ${{ matrix.proto.directory.ts }} && yarn --cwd ${{ matrix.proto.directory.ts }} build
 
-          publish=(yarn --cwd ts publish --access=public --no-git-tag-version --non-interactive --tag latest)
+          publish=(yarn --cwd ${{ matrix.proto.directory.ts }} publish --access=public --no-git-tag-version --non-interactive --tag latest)
 
           echo "🚀 Publishing npm package with following command line: ${publish[@]}"
           "${publish[@]}"
@@ -130,6 +131,20 @@ jobs:
       - name: Install cargo make
         uses: davidB/rust-cargo-make@v1
 
+      - name: Configure buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Generate proto
+        run: |
+          jq -c '.proto[]' proto.json | while read i; do
+            BUF=$(echo $i | jq -cr '.buf')
+            BUF_YAML=$(grep -q "cosmos/cosmos-sdk" <<< "$BUF" && echo "buf.gen.rust.cosmos.yaml" || echo "buf.gen.rust.yaml")
+            DIRECTORY=$(echo $i | jq -cr '.directory.rust')
+            buf generate --template $BUF_YAML $BUF -o $DIRECTORY
+          done
+
       - name: Publish packages
         working-directory: ./rust
         run: |
@@ -139,13 +154,9 @@ jobs:
   publish-pypi:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-22.04
+    needs: matrix
     strategy:
-      matrix:
-        target:
-          - name: cosmos_sdk_grpc_client
-            includes: "-I=../../proto/cosmos-sdk $(find ../../proto/cosmos-sdk -type f -name '*.proto' | tr '\n' ' ')"
-          - name: okp4_grpc_client
-            includes: "-I=../../proto/cosmos-sdk -I=../../proto/okp4 $(find ../../proto -type f -name '*.proto' | tr '\n' ' ')"
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -161,17 +172,22 @@ jobs:
       - name: Install Python Poetry
         uses: abatilo/actions-poetry@v2.3.0
         with:
-          poetry-version: 1.1.11
+          poetry-version: 1.4.1
+
+      - name: Configure buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Generate proto
+        run: |
+          buf generate --template buf.gen.python.yaml ${{ matrix.proto.buf }} -o ${{ matrix.proto.directory.python }}
 
       - name: Publish package
-        working-directory: ./python/${{ matrix.target.name }}
+        working-directory: ./${{ matrix.proto.directory.python }}/../
         run: |
           poetry install
-
-          mkdir -p ${{ matrix.target.name }}
-          poetry run python -m grpc_tools.protoc ${{ matrix.target.includes }} --grpc_python_out=${{ matrix.target.name }}
-
           poetry build
 
-          echo "🚀 Publishing pypi package '${{ matrix.target.name }}'"
+          echo "🚀 Publishing pypi package '${{ matrix.proto.directory.python }}'"
           poetry publish  -u __token__ -p "${{ secrets.PYPI_API_TOKEN }}"

@@ -16,16 +16,6 @@ plugins:
   - - "@google/semantic-release-replace-plugin"
     - replacements:
         - files:
-            - kotlin/gradle.properties
-          from: 'project\.version=.*'
-          to: "project.version=${nextRelease.version}"
-          countMatches: true
-          results:
-            - file: kotlin/gradle.properties
-              hasChanged: true
-              numMatches: 1
-              numReplacements: 1
-        - files:
             - python/cosmos_sdk_grpc_client/pyproject.toml
             - python/okp4_grpc_client/pyproject.toml
           from: ^version = ".+"
@@ -41,17 +31,17 @@ plugins:
               numMatches: 1
               numReplacements: 1
         - files:
-            - rust/cosmos_sdk_grpc_client/Cargo.toml
-            - rust/okp4_grpc_client/Cargo.toml
+            - rust/cosmos-sdk-grpc-client/Cargo.toml
+            - rust/okp4-grpc-client/Cargo.toml
           from: ^version = ".+"
           to: version = "${nextRelease.version}"
           countMatches: true
           results:
-            - file: rust/cosmos_sdk_grpc_client/Cargo.toml
+            - file: rust/cosmos-sdk-grpc-client/Cargo.toml
               hasChanged: true
               numMatches: 1
               numReplacements: 1
-            - file: rust/okp4_grpc_client/Cargo.toml
+            - file: rust/okp4-grpc-client/Cargo.toml
               hasChanged: true
               numMatches: 1
               numReplacements: 1
@@ -59,9 +49,8 @@ plugins:
   - - "@semantic-release/git"
     - assets:
         - CHANGELOG.md
-        - kotlin/gradle.properties
         - ts/package.json
         - python/pyproject.toml
-        - rust/cosmos_sdk_grpc_client/Cargo.toml
-        - rust/okp4_grpc_client/Cargo.toml
+        - rust/cosmos-sdk-grpc-client/Cargo.toml
+        - rust/okp4-grpc-client/Cargo.toml
       message: "chore(release): perform release ${nextRelease.version}"

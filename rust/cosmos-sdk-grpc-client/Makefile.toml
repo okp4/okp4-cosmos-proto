@@ -1,0 +1,12 @@
+[tasks.publish]
+args = ["publish", "--token", "${CARGO_API_TOKEN}"]
+command = "cargo"
+
+[tasks.build]
+dependencies = ["patch"]
+args = ["build", "--release", "--locked"]
+command = "cargo"
+
+[tasks.patch]
+args = ["run", "--manifest-path", "../patch/Cargo.toml"]
+command = "cargo"

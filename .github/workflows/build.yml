@@ -14,52 +14,47 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-kotlin:
+  matrix:
     runs-on: ubuntu-22.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-
-      - uses: actions/setup-java@v3
-        with:
-          distribution: "temurin"
-          java-version: "11"
-
-      - name: Configure gradle.properties
-        run: |
-          cat <<EOF >> kotlin/gradle.properties
-          maven.credentials.username=${{ secrets.MAVEN_REPOSITORY_USERNAME }}
-          maven.credentials.password=${{ secrets.MAVEN_REPOSITORY_PASSWORD }}
-          EOF
-
-      - name: Build kotlin
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: build -x check
-          build-root-directory: kotlin
+      - uses: actions/checkout@v2
+      - id: set-matrix
+        run: echo "::set-output name=matrix::$(cat proto.json | jq -c .)"
 
   build-typescript:
     runs-on: ubuntu-22.04
+    needs: matrix
+    strategy:
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+
+      - name: Configure buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Generate proto
+        run: |
+          buf generate --template buf.gen.ts.yaml ${{ matrix.proto.buf }} -o ${{ matrix.proto.directory.ts }}
 
       - name: Setup node environment (for building)
         uses: actions/setup-node@v3
         with:
-          node-version: 16.14.0
+          node-version: 16.19.0
 
       - name: Fetch dependencies
-        run: yarn --cwd ts
-
-      - name: Generate sources
-        run: yarn --cwd ts generate
+        run: yarn --cwd ${{ matrix.proto.directory.ts }}
 
       - name: Build
-        run: yarn --cwd ts build
+        run: yarn --cwd ${{ matrix.proto.directory.ts }} build
 
   build-rust:
     runs-on: ubuntu-22.04
+    needs: matrix
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -74,6 +69,7 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
+
       - name: Setup rust
         uses: actions-rs/toolchain@v1
         with:
@@ -84,19 +80,30 @@ jobs:
       - name: Install cargo make
         uses: davidB/rust-cargo-make@v1
 
+      - name: Configure buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Generate proto
+        run: |
+          jq -c '.proto[]' proto.json | while read i; do
+            BUF=$(echo $i | jq -cr '.buf')
+            BUF_YAML=$(grep -q "cosmos/cosmos-sdk" <<< "$BUF" && echo "buf.gen.rust.cosmos.yaml" || echo "buf.gen.rust.yaml")
+            DIRECTORY=$(echo $i | jq -cr '.directory.rust')
+            buf generate --template $BUF_YAML $BUF -o $DIRECTORY
+          done
+
       - name: Build rust
         working-directory: ./rust
-        run: cargo make build
+        run: |
+          cargo make build
 
   build-python:
     runs-on: ubuntu-22.04
+    needs: matrix
     strategy:
-      matrix:
-        target:
-          - name: cosmos_sdk_grpc_client
-            includes: "-I=../../proto/cosmos-sdk $(find ../../proto/cosmos-sdk -type f -name '*.proto' | tr '\n' ' ')"
-          - name: okp4_grpc_client
-            includes: "-I=../../proto/cosmos-sdk -I=../../proto/okp4 $(find ../../proto -type f -name '*.proto' | tr '\n' ' ')"
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -108,20 +115,23 @@ jobs:
       - name: Install Python Poetry
         uses: abatilo/actions-poetry@v2.3.0
         with:
-          poetry-version: 1.1.11
+          poetry-version: 1.4.1
+
+      - name: Configure buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Generate proto
+        run: |
+          buf generate --template buf.gen.python.yaml ${{ matrix.proto.buf }} -o ${{ matrix.proto.directory.python }}
 
       - name: Install project dependencies
-        working-directory: ./python/${{ matrix.target.name }}
+        working-directory: ./${{ matrix.proto.directory.python }}/../
         run: |
           poetry install
 
-      - name: Install project dependencies
-        working-directory: ./python/${{ matrix.target.name }}
-        run: |
-          mkdir -p ${{ matrix.target.name }}
-          poetry run python -m grpc_tools.protoc ${{ matrix.target.includes }} --grpc_python_out=${{ matrix.target.name }}
-
       - name: Build project
-        working-directory: ./python/${{ matrix.target.name }}
+        working-directory: ./${{ matrix.proto.directory.python }}/../
         run: |
           poetry build

@@ -46,12 +46,12 @@ dependencies = ["lint-rust-format", "lint-rust", "lint-toml"]
 dependencies = ["format-rust", "format-toml"]
 
 [tasks.clean]
+dependencies = ["proto-clean"]
 args = ["clean"]
 command = "cargo"
 
 [tasks.build]
-args = ["build", "--release", "--locked"]
-command = "cargo"
+workspace = true
 
 [tasks.build-coverage]
 args = ["build"]
@@ -74,17 +74,13 @@ script = '''
 grcov . --binary-path ./target/debug/ -s . -t lcov --branch --ignore-not-existing --ignore "*cargo*" -o coverage.lcov
 '''
 
-[tasks.publish-cosmos]
-args = ["publish", "--token", "${CARGO_API_TOKEN}", "--manifest-path", "cosmos_sdk_grpc_client/Cargo.toml"]
-command = "cargo"
-
-[tasks.publish-okp4]
-args = ["publish", "--token", "${CARGO_API_TOKEN}", "--manifest-path", "okp4_grpc_client/Cargo.toml"]
-command = "cargo"
-
 [tasks.publish]
-dependencies = ["generate-proto", "publish-cosmos", "publish-okp4"]
+workspace = true
 
-[tasks.generate-proto]
-args = ["run"]
-command = "cargo"
+[tasks.proto-clean]
+script = '''
+rm -rf */src/gen
+'''
+
+[config]
+default_to_workspace = false

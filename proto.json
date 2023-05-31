@@ -1,0 +1,20 @@
+{
+  "proto": [ 
+    {
+      "buf": "buf.build/okp4/okp4d",
+      "directory": {
+        "ts": "ts/okp4-grpc-client",
+        "rust": "rust/okp4-grpc-client",
+        "python": "python/okp4_grpc_client/okp4_grpc_client"
+      }
+    },
+    {
+      "buf": "buf.build/cosmos/cosmos-sdk:v0.47.0",
+      "directory": {
+        "ts": "ts/cosmos-sdk-grpc-client",
+        "rust": "rust/cosmos-sdk-grpc-client",
+        "python": "python/cosmos_sdk_grpc_client/cosmos_sdk_grpc_client"
+      }
+    }
+  ]
+}

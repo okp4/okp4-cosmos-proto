@@ -1,0 +1,38 @@
+{
+    "name": "@okp4/okp4-grpc-client",
+    "version": "1.2.0",
+    "private": false,
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:okp4/okp4-cosmos-proto.git",
+        "directory": "ts/okp4-grpc-client"
+    },
+    "license": "BSD-3-Clause",
+    "description": "Typescript gRPC client for ØKP4 and by extension, CØSMOS based blockchains.",
+    "homepage": "https://github.com/okp4/okp4-cosmos-proto",
+    "author": {
+        "name": "OKP4",
+        "web": "https://okp4.com"
+    },
+    "engines": {
+        "node": "^16.19",
+        "yarn": "~1.22.17"
+    },
+    "files": [
+        "dist"
+    ],
+    "dependencies": {
+        "@types/google-protobuf": "^3.7.0",
+        "google-protobuf": "^3.14.0",
+        "grpc-web": "^1.3.1"
+    },
+    "devDependencies": {
+        "typescript": "^4.6.3",
+        "@protobuf-ts/protoc": "^2.4.0"
+    },
+    "scripts": {
+        "clean": "rm -rf gen-ts && mkdir gen-ts",
+        "build": "tsc && yarn run hack",
+        "hack": "find gen-ts -type d | cut -d '/' -f2- | xargs -I {} mkdir -p dist/{} && find gen-ts -type f -name *.d.ts | cut -d '/' -f2- | xargs -I {} cp gen-ts/{} dist/{} && find gen-ts -type f -name *.js | cut -d '/' -f2- | xargs -I {} cp gen-ts/{} dist/{}"
+    }
+}
