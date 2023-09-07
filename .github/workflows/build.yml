@@ -27,7 +27,8 @@ jobs:
     runs-on: ubuntu-22.04
     needs: matrix
     strategy:
-      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
+      matrix: 
+        proto: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -87,7 +88,7 @@ jobs:
 
       - name: Generate proto
         run: |
-          jq -c '.proto[]' proto.json | while read i; do
+          jq -c '.[]' proto.json | while read i; do
             BUF=$(echo $i | jq -cr '.buf')
             BUF_YAML=$(grep -q "cosmos/cosmos-sdk" <<< "$BUF" && echo "buf.gen.rust.cosmos.yaml" || echo "buf.gen.rust.yaml")
             DIRECTORY=$(echo $i | jq -cr '.directory.rust')

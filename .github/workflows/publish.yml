@@ -23,7 +23,8 @@ jobs:
     runs-on: ubuntu-22.04
     needs: matrix
     strategy:
-      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
+      matrix: 
+        proto: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
