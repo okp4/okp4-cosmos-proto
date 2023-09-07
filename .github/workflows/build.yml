@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: matrix
     strategy:
-      matrix: 
+      matrix:
         proto: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
