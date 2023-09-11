@@ -2,15 +2,15 @@ version: v1
 managed:
   enabled: true
 plugins:
-  - remote: buf.build/prost/plugins/prost:v0.2.1-1
+  - plugin: buf.build/community/neoeinstein-prost:v0.2.1
     out: src/gen
     opt:
       - extern_path=.cosmos=cosmos_sdk_grpc_client::cosmos
-  - remote: buf.build/prost/plugins/tonic:v0.2.1-1
+  - plugin: buf.build/community/neoeinstein-tonic:v0.2.2
     out: src/gen
     opt:
       - extern_path=.cosmos=cosmos_sdk_grpc_client::cosmos
-  - remote: buf.build/prost/plugins/crate:v0.3.1-1
+  - plugin: buf.build/community/neoeinstein-prost-crate:v0.3.1
     out: src/gen
     opt:
       - no_features

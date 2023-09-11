@@ -34,5 +34,6 @@
         "clean": "rm -rf gen-ts && mkdir gen-ts",
         "build": "tsc && yarn run hack",
         "hack": "find gen-ts -type d | cut -d '/' -f2- | xargs -I {} mkdir -p dist/{} && find gen-ts -type f -name *.d.ts | cut -d '/' -f2- | xargs -I {} cp gen-ts/{} dist/{} && find gen-ts -type f -name *.js | cut -d '/' -f2- | xargs -I {} cp gen-ts/{} dist/{}"
-    }
+    },
+    "exports": "./dist/*"
 }
