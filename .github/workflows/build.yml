@@ -19,7 +19,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - id: set-matrix
         run: echo "::set-output name=matrix::$(cat proto.json | jq -c .)"
 
@@ -31,7 +31,7 @@ jobs:
         proto: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configure buf
         uses: bufbuild/buf-setup-action@v1
@@ -58,7 +58,7 @@ jobs:
     needs: matrix
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Cache cargo registry
         uses: actions/cache@v3
@@ -108,7 +108,7 @@ jobs:
         proto: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - uses: actions/setup-python@v4
         with:
