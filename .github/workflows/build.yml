@@ -43,7 +43,7 @@ jobs:
           buf generate --template buf.gen.ts.yaml ${{ matrix.proto.buf }} -o ${{ matrix.proto.directory.ts }}
 
       - name: Setup node environment (for building)
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 16.19.0
 
