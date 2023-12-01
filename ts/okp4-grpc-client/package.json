@@ -12,7 +12,7 @@
     "homepage": "https://github.com/okp4/okp4-cosmos-proto",
     "author": {
         "name": "OKP4",
-        "web": "https://okp4.com"
+        "web": "https://okp4.network"
     },
     "engines": {
         "node": "^16.19",
