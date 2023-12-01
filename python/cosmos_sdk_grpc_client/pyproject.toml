@@ -2,7 +2,7 @@
 name = "cosmos_sdk_grpc_client"
 version = "1.0.0"
 description = "Python gRPC client for CØSMOS SDK based blockchains."
-authors = ["OKP4 <opensource@okp4.com>"]
+authors = ["OKP4 <opensource@okp4.org>"]
 readme = "README.md"
 license = "BSD-3-Clause"
 repository = "https://github.com/okp4/okp4-cosmos-proto"
