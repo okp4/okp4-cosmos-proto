@@ -129,7 +129,7 @@ jobs:
           python-version: 3.9
 
       - name: Install Python Poetry
-        uses: abatilo/actions-poetry@v2.4.0
+        uses: abatilo/actions-poetry@v3.0.0
         with:
           poetry-version: 1.4.1
 
